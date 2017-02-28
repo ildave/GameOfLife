@@ -1,0 +1,158 @@
+<html>
+<head>
+<style>
+#gol {
+    width: 600px;
+    height: 600px;
+    border: 1px solid black;
+}
+</style>
+<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+</head>
+
+<body>
+<canvas id="gol" width="600" height="600"></canvas>
+<br />
+<button id="next-btn">Next</button> <button id="run-btn">Run</button>
+
+<script>
+
+function debug() {
+    var args =  Array.from(arguments);
+    var values = args.join(", ");
+    console.log(values);
+}
+
+var WIDTH = 60;
+var HEIGHT = 60;
+var CELL_SIZE = 10;
+var RUNNING = 0;
+
+var grid = new Array(WIDTH);
+for (var i = 0; i < WIDTH; i ++) {
+    grid[i] = new Array(HEIGHT);
+}
+for (var i = 0; i < WIDTH; i ++) {
+    for (var j = 0; j < HEIGHT; j++) {
+        grid[i][j] = false;
+    }
+}
+
+
+var canvas = document.getElementById('gol');
+var ctx = canvas.getContext('2d');
+var elemLeft = canvas.offsetLeft;
+var elemTop = canvas.offsetTop;
+
+canvas.addEventListener("click", function(event) {
+    var x = event.pageX - elemLeft;
+    var y = event.pageY - elemTop;
+    debug("X", x);
+    debug("Y", y);
+    clickGrid(ctx, x, y);
+});
+
+
+function clickGrid(ctx, x, y) {
+    var Xcoord = Math.floor(x / CELL_SIZE);
+    var Ycoord = Math.floor(y / CELL_SIZE);
+    debug("XCOORD", Xcoord, "YCOORD", Ycoord);
+    grid[Xcoord][Ycoord] = !grid[Xcoord][Ycoord];    
+    fillGrid(ctx, Xcoord, Ycoord);
+}
+
+function draw() {
+    for (var i = 0; i < WIDTH; i++) {
+        for (var j = 0; j < HEIGHT; j++) {
+            fillGrid(ctx, i, j);
+        }
+    }
+}
+
+function fillGrid(ctx, x, y) {
+    if (grid[x][y]) {
+        ctx.fillStyle = 'rgb(0, 0, 0)';
+    }
+    else {
+        ctx.fillStyle = 'rgb(255, 255, 255)';
+    }
+    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+}
+
+function next(grid) {
+    var next = new Array(WIDTH);
+    for (var i = 0; i < WIDTH; i ++) {
+        next[i] = new Array(HEIGHT);
+    }
+    for (var i = 0; i < WIDTH; i++) {
+        for (var j = 0; j < HEIGHT; j++) {
+            var n = countAliveNeighbours(i, j);
+            if (n < 2 && grid[i][j]) {
+                next[i][j] = false;
+            }
+            else if ((n == 2 || n == 3) && grid[i][j]) {
+                next[i][j] = true;
+            }
+            else if (n > 3 && grid[i][j]) {
+                next[i][j] = false;
+            }
+            else if (n == 3 && !grid[i][j]) {
+                next[i][j] = true;
+            }
+            else {
+                next[i][j] = false;
+            }
+        }
+    }
+    return next;
+}
+
+function getCell(x, y) {
+    return (grid[x] && grid[x][y]) || undefined;
+}
+
+function countAliveNeighbours(x, y) {
+    var n = 0;
+    var neighbours = [
+        getCell(x - 1, y - 1),
+        getCell(x - 1, y),
+        getCell(x - 1, y + 1),
+        getCell(x, y - 1),
+        getCell(x, y + 1),
+        getCell(x + 1, y - 1),
+        getCell(x + 1, y),
+        getCell(x + 1, y + 1)
+    ];
+    for (var i = 0; i < neighbours.length; i++) {
+        if (neighbours[i] === true) {
+            n++;
+        }
+    }
+    return n;
+}
+
+function run() {
+    grid = next(grid);
+    draw();
+}
+
+$(document).ready(function() {
+    $("#next-btn").on("click", run);
+    $("#run-btn").on("click", function() {
+        if (RUNNING > 0) {
+            clearInterval(RUNNING)
+            RUNNING = 0;
+            $("#run-btn").html("Run");
+        }
+        else {
+            RUNNING = setInterval(run, 500);
+            $("#run-btn").html("Stop");
+        }
+    })
+});
+
+</script>
+</body>
+
+
+</html>

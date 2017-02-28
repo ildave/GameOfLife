@@ -1,2 +1,2 @@
 # GameOfLife
-Simple Javascript implementation of Conway's Game of Life.
+Simple  Javascript implementation of Conway's Game of Life.

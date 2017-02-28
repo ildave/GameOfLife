@@ -14,7 +14,7 @@
 <body>
 <canvas id="gol" width="600" height="600"></canvas>
 <br />
-<button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button>
+<button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button> <input type="text" id="steps" value="0" /> steps
 
 <script>
 
@@ -28,6 +28,8 @@ var WIDTH = 60;
 var HEIGHT = 60;
 var CELL_SIZE = 10;
 var RUNNING = 0;
+
+var steps = 0;
 
 var grid = new Array(WIDTH);
 for (var i = 0; i < WIDTH; i ++) {
@@ -133,6 +135,8 @@ function countAliveNeighbours(x, y) {
 }
 
 function run() {
+    steps++;
+    $("#steps").val(steps);
     grid = next(grid);
     draw();
 }
@@ -156,6 +160,8 @@ $(document).ready(function() {
                 grid[i][j] = false;
             }
         }
+        steps = 0;
+        $("#steps").val(steps);
         draw();
     });
 });

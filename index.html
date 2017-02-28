@@ -1,5 +1,6 @@
 <html>
 <head>
+<title>Conway's Game of Life</title>
 <style>
 #gol {
     width: 600px;
@@ -13,7 +14,7 @@
 <body>
 <canvas id="gol" width="600" height="600"></canvas>
 <br />
-<button id="next-btn">Next</button> <button id="run-btn">Run</button>
+<button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button>
 
 <script>
 
@@ -148,7 +149,15 @@ $(document).ready(function() {
             RUNNING = setInterval(run, 500);
             $("#run-btn").html("Stop");
         }
-    })
+    });
+    $("#clear-btn").on("click", function() {
+        for (var i = 0; i < WIDTH; i ++) {
+            for (var j = 0; j < HEIGHT; j++) {
+                grid[i][j] = false;
+            }
+        }
+        draw();
+    });
 });
 
 </script>

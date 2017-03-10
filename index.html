@@ -14,7 +14,8 @@
 <body>
 <canvas id="gol" width="600" height="600"></canvas>
 <br />
-<button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button> <input type="text" id="steps" value="0" /> steps
+<button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button> Generations duration: <input type="text" id="speed" value="500" size="5" /> milliseconds <button id="speed-btn">Set</button><br />
+<input type="text" id="steps" value="0" size="5" /> steps 
 
 <script>
 
@@ -46,6 +47,7 @@ var canvas = document.getElementById('gol');
 var ctx = canvas.getContext('2d');
 var elemLeft = canvas.offsetLeft;
 var elemTop = canvas.offsetTop;
+var speed = 500;
 
 canvas.addEventListener("click", function(event) {
     var x = event.pageX - elemLeft;
@@ -145,12 +147,12 @@ $(document).ready(function() {
     $("#next-btn").on("click", run);
     $("#run-btn").on("click", function() {
         if (RUNNING > 0) {
-            clearInterval(RUNNING)
+            clearInterval(RUNNING);
             RUNNING = 0;
             $("#run-btn").html("Run");
         }
         else {
-            RUNNING = setInterval(run, 500);
+            RUNNING = setInterval(run, speed);
             $("#run-btn").html("Stop");
         }
     });
@@ -164,6 +166,11 @@ $(document).ready(function() {
         $("#steps").val(steps);
         draw();
     });
+    $("#speed-btn").on("click", function() {
+		speed = $("#speed").val();
+		clearInterval(RUNNING);
+		RUNNING = setInterval(run, speed);
+    })
 });
 
 </script>

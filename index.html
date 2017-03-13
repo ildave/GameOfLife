@@ -16,7 +16,8 @@
 <br />
 <button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button><br />
 Generations duration: <input type="text" id="speed" value="500" size="5" /> milliseconds <button id="speed-btn">Set</button><br />
-<input type="text" id="steps" value="0" size="5" /> steps 
+<input type="text" id="steps" value="0" size="5" /> steps<br />
+<button id="img-save">Save as image</button>
 
 <script>
 
@@ -171,7 +172,10 @@ $(document).ready(function() {
 		speed = $("#speed").val();
 		clearInterval(RUNNING);
 		RUNNING = setInterval(run, speed);
-    })
+    });
+    $("#img-save").on("click", function() {
+        window.open(canvas.toDataURL('image/png'));
+    });
 });
 
 </script>

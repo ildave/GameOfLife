@@ -14,7 +14,7 @@
 <body>
 <canvas id="gol" width="600" height="600"></canvas>
 <br />
-<button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button><br />
+<button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button> <button id="random-btn">Random</button><br />
 Generations duration: <input type="text" id="speed" value="500" size="5" /> milliseconds <button id="speed-btn">Set</button><br />
 <input type="text" id="steps" value="0" size="5" /> steps<br />
 <button id="img-save">Save as image</button>
@@ -175,6 +175,17 @@ $(document).ready(function() {
     });
     $("#img-save").on("click", function() {
         window.open(canvas.toDataURL('image/png'));
+    });
+    $("#random-btn").on("click", function() {
+        for (var i = 0; i < WIDTH; i ++) {
+            for (var j = 0; j < HEIGHT; j++) {
+                var n = Math.floor((Math.random() * 10) + 1);
+                grid[i][j] = n > 5;
+            }
+        }
+        steps = 0;
+        $("#steps").val(steps);
+        draw();
     });
 });
 

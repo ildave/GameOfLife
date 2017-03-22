@@ -5,3 +5,4 @@ Simple  Javascript implementation of Conway's Game of Life.
 * ~~Set speed of simulation~~
 * ~~Export status of the simulation as image file~~
 * Import / export of the simulation status to / from text string
+* Button to till the board with a random status

@@ -17,7 +17,8 @@
 <button id="next-btn">Next</button> <button id="run-btn">Run</button> <button id="clear-btn">Clear</button> <button id="random-btn">Random</button><br />
 Generations duration: <input type="text" id="speed" value="500" size="5" /> milliseconds <button id="speed-btn">Set</button><br />
 <input type="text" id="steps" value="0" size="5" /> steps<br />
-<button id="img-save">Save as image</button>
+<button id="img-save">Save as image</button><br />
+<textarea id="importexport" cols="65" rows="10"></textarea> <button id="import-btn">Import</button>
 
 <script>
 
@@ -54,8 +55,6 @@ var speed = 500;
 canvas.addEventListener("click", function(event) {
     var x = event.pageX - elemLeft;
     var y = event.pageY - elemTop;
-    debug("X", x);
-    debug("Y", y);
     clickGrid(ctx, x, y);
 });
 
@@ -63,9 +62,9 @@ canvas.addEventListener("click", function(event) {
 function clickGrid(ctx, x, y) {
     var Xcoord = Math.floor(x / CELL_SIZE);
     var Ycoord = Math.floor(y / CELL_SIZE);
-    debug("XCOORD", Xcoord, "YCOORD", Ycoord);
     grid[Xcoord][Ycoord] = !grid[Xcoord][Ycoord];    
     fillGrid(ctx, Xcoord, Ycoord);
+    encode();
 }
 
 function draw() {
@@ -138,11 +137,67 @@ function countAliveNeighbours(x, y) {
     return n;
 }
 
+function encode() {
+    //b = parseInt(a, 2)  from binary to dec
+    var fullString = "";
+    for (var i = 0; i < WIDTH; i ++) {
+        for (var j = 0; j < HEIGHT; j++) {
+            if (grid[j][i]) {
+                fullString += "1";
+            }
+            else {
+                fullString += "0";
+            }
+        }
+    }
+    var encodedString = "";
+    for (var i = 0; i < WIDTH * HEIGHT; i = i + 8) {
+        var word = fullString.substr(i, 8);
+        var n = parseInt(word, 2);
+        if (n < 10) {
+            n = "00" + n;
+        }
+        else if (n < 100) {
+            n = "0" + n;
+        }
+        encodedString += n;    
+    }
+    
+    $("#importexport").val(encodedString);
+}
+
+function decode() {
+    //a.toString(2) -- need to pad
+    var encodedString = $("#importexport").val();
+    var binaryString = "";
+    for (var i = 0; i < WIDTH * HEIGHT / 8 * 3; i = i + 3) {
+        var digit = parseInt(encodedString.substr(i, 3));
+        var binary = digit.toString(2);
+        binary = ('00000000' + binary).substring(binary.length)
+        binaryString += binary;
+    }
+
+    for (var i = 0; i < WIDTH; i ++) {
+        for (var j = 0; j < HEIGHT; j++) {
+            if (binaryString.substr(i*WIDTH + j, 1) == "1") {
+                grid[j][i] = true;
+            }
+            else {
+                grid[j][i] = false;
+            }
+            
+        }
+    }
+    draw();
+
+}
+
 function run() {
     steps++;
     $("#steps").val(steps);
     grid = next(grid);
     draw();
+    encode();
 }
 
 $(document).ready(function() {
@@ -166,6 +221,7 @@ $(document).ready(function() {
         }
         steps = 0;
         $("#steps").val(steps);
+        $("#importexport").val("");
         draw();
     });
     $("#speed-btn").on("click", function() {
@@ -186,6 +242,10 @@ $(document).ready(function() {
         steps = 0;
         $("#steps").val(steps);
         draw();
+        encode();
+    });
+    $("#import-btn").on("click", function() {
+        decode();
     });
 });
 

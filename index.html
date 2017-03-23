@@ -173,7 +173,7 @@ function decode() {
     for (var i = 0; i < WIDTH * HEIGHT / 8 * 3; i = i + 3) {
         var digit = parseInt(encodedString.substr(i, 3));
         var binary = digit.toString(2);
-        binary = ('00000000' + binary).substring(binary.length)
+        binary = ('00000000' + binary).substring(binary.length); //clever trick to pad left: http://stackoverflow.com/questions/5366849/convert-1-to-0001-in-javascript#comment49328109_5366862
         binaryString += binary;
     }
 

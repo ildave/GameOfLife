@@ -167,7 +167,7 @@ function encode() {
 
 function decode() {
     //a.toString(2) -- need to pad
-    var encodedString = $("#importexport").val();
+    var encodedString = document.getElementById("importexport").value;
     var binaryString = "";
     for (var i = 0; i < WIDTH * HEIGHT / 8 * 3; i = i + 3) {
         var digit = parseInt(encodedString.substr(i, 3));

@@ -27,81 +27,74 @@ function debug() {
     console.log(values);
 }
 
-var WIDTH = 60;
-var HEIGHT = 60;
-var CELL_SIZE = 10;
-var RUNNING = 0;
+function Grid(width, height, canvas) {
+    this.width = width;
+    this.height = height;
+    this.ctx = canvas.getContext('2d');
+    this.speed = 500;
+    this.cellSize = 10;
+    this.running = 0;
+    this.steps = 0;
 
-var steps = 0;
-
-var grid = new Array(WIDTH);
-for (var i = 0; i < WIDTH; i ++) {
-    grid[i] = new Array(HEIGHT);
+    this.grid = new Array(this.width);
 }
-for (var i = 0; i < WIDTH; i ++) {
-    for (var j = 0; j < HEIGHT; j++) {
-        grid[i][j] = false;
+
+Grid.prototype.setup = function() {
+    for (var i = 0; i < this.width; i ++) {
+        this.grid[i] = new Array(this.height);
     }
-}
-
-
-var canvas = document.getElementById('gol');
-var ctx = canvas.getContext('2d');
-var elemLeft = canvas.offsetLeft;
-var elemTop = canvas.offsetTop;
-var speed = 500;
-
-canvas.addEventListener("click", function(event) {
-    var x = event.pageX - elemLeft;
-    var y = event.pageY - elemTop;
-    clickGrid(ctx, x, y);
-});
-
-
-function clickGrid(ctx, x, y) {
-    var Xcoord = Math.floor(x / CELL_SIZE);
-    var Ycoord = Math.floor(y / CELL_SIZE);
-    grid[Xcoord][Ycoord] = !grid[Xcoord][Ycoord];    
-    fillGrid(ctx, Xcoord, Ycoord);
-    encode();
-}
-
-function draw() {
-    for (var i = 0; i < WIDTH; i++) {
-        for (var j = 0; j < HEIGHT; j++) {
-            fillGrid(ctx, i, j);
+    for (var i = 0; i < this.width; i ++) {
+        for (var j = 0; j < this.height; j++) {
+            this.grid[i][j] = false;
         }
     }
 }
 
-function fillGrid(ctx, x, y) {
-    if (grid[x][y]) {
-        ctx.fillStyle = 'rgb(0, 0, 0)';
+Grid.prototype.fillGrid = function(x, y) {
+    if (this.grid[x][y]) {
+        this.ctx.fillStyle = 'rgb(0, 0, 0)';
     }
     else {
-        ctx.fillStyle = 'rgb(255, 255, 255)';
+        this.ctx.fillStyle = 'rgb(255, 255, 255)';
     }
-    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+    this.ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+
 }
 
-function next(grid) {
-    var next = new Array(WIDTH);
-    for (var i = 0; i < WIDTH; i ++) {
-        next[i] = new Array(HEIGHT);
+Grid.prototype.draw = function() {
+    for (var i = 0; i < this.width; i++) {
+        for (var j = 0; j < this.height; j++) {
+            this.fillGrid(i, j);
+        }
     }
-    for (var i = 0; i < WIDTH; i++) {
-        for (var j = 0; j < HEIGHT; j++) {
-            var n = countAliveNeighbours(i, j);
-            if (n < 2 && grid[i][j]) {
+}
+
+Grid.prototype.clickGrid = function(x, y, target) {
+    var Xcoord = Math.floor(x / this.cellSize);
+    var Ycoord = Math.floor(y / this.cellSize);
+    this.grid[Xcoord][Ycoord] = !this.grid[Xcoord][Ycoord];    
+    this.fillGrid(Xcoord, Ycoord);
+    this.encode(target);
+}
+
+Grid.prototype.next = function() {
+    var next = new Array(this.width);
+    for (var i = 0; i < this.width; i ++) {
+        next[i] = new Array(this.height);
+    }
+    for (var i = 0; i < this.width; i++) {
+        for (var j = 0; j < this.height; j++) {
+            var n = this.countAliveNeighbours(i, j);
+            if (n < 2 && this.grid[i][j]) {  //muoio
                 next[i][j] = false;
             }
-            else if ((n == 2 || n == 3) && grid[i][j]) {
+            else if ((n == 2 || n == 3) && this.grid[i][j]) { //resto vivo
                 next[i][j] = true;
             }
-            else if (n > 3 && grid[i][j]) {
+            else if (n > 3 && this.grid[i][j]) { ///muoio
                 next[i][j] = false;
             }
-            else if (n == 3 && !grid[i][j]) {
+            else if (n == 3 && !this.grid[i][j]) { //nasco
                 next[i][j] = true;
             }
             else {
@@ -109,24 +102,24 @@ function next(grid) {
             }
         }
     }
-    return next;
+    this.grid = next;
 }
 
-function getCell(x, y) {
-    return (grid[x] && grid[x][y]) || undefined;
+Grid.prototype.getCell = function(x, y) {
+    return (this.grid[x] && this.grid[x][y]) || undefined;
 }
 
-function countAliveNeighbours(x, y) {
+Grid.prototype.countAliveNeighbours = function(x, y) {
     var n = 0;
     var neighbours = [
-        getCell(x - 1, y - 1),
-        getCell(x - 1, y),
-        getCell(x - 1, y + 1),
-        getCell(x, y - 1),
-        getCell(x, y + 1),
-        getCell(x + 1, y - 1),
-        getCell(x + 1, y),
-        getCell(x + 1, y + 1)
+        this.getCell(x - 1, y - 1),
+        this.getCell(x - 1, y),
+        this.getCell(x - 1, y + 1),
+        this.getCell(x, y - 1),
+        this.getCell(x, y + 1),
+        this.getCell(x + 1, y - 1),
+        this.getCell(x + 1, y),
+        this.getCell(x + 1, y + 1)
     ];
     for (var i = 0; i < neighbours.length; i++) {
         if (neighbours[i] === true) {
@@ -136,12 +129,12 @@ function countAliveNeighbours(x, y) {
     return n;
 }
 
-function encode() {
+Grid.prototype.encode = function(target) {
     //b = parseInt(a, 2)  from binary to dec
     var fullString = "";
-    for (var i = 0; i < WIDTH; i ++) {
-        for (var j = 0; j < HEIGHT; j++) {
-            if (grid[j][i]) {
+    for (var i = 0; i < this.width; i ++) {
+        for (var j = 0; j < this.height; j++) {
+            if (this.grid[j][i]) {
                 fullString += "1";
             }
             else {
@@ -150,7 +143,7 @@ function encode() {
         }
     }
     var encodedString = "";
-    for (var i = 0; i < WIDTH * HEIGHT; i = i + 8) {
+    for (var i = 0; i < this.width * this.height; i = i + 8) {
         var word = fullString.substr(i, 8);
         var n = parseInt(word, 2);
         if (n < 10) {
@@ -162,99 +155,140 @@ function encode() {
         encodedString += n;    
     }
     
-    document.getElementById("importexport").value = encodedString;
+    //document.getElementById("importexport").value = encodedString;
+    target.value = encodedString;
 }
 
-function decode() {
+Grid.prototype.decode = function(source) {
     //a.toString(2) -- need to pad
-    var encodedString = document.getElementById("importexport").value;
+    //var encodedString = document.getElementById("importexport").value;
+    var encodedString = source.value;
     var binaryString = "";
-    for (var i = 0; i < WIDTH * HEIGHT / 8 * 3; i = i + 3) {
+    for (var i = 0; i < this.width * this.height / 8 * 3; i = i + 3) {
         var digit = parseInt(encodedString.substr(i, 3));
         var binary = digit.toString(2);
         binary = ('00000000' + binary).substring(binary.length); //clever trick to pad left: http://stackoverflow.com/questions/5366849/convert-1-to-0001-in-javascript#comment49328109_5366862
         binaryString += binary;
     }
 
-    for (var i = 0; i < WIDTH; i ++) {
-        for (var j = 0; j < HEIGHT; j++) {
-            if (binaryString.substr(i*WIDTH + j, 1) == "1") {
-                grid[j][i] = true;
+    for (var i = 0; i < this.width; i ++) {
+        for (var j = 0; j < this.height; j++) {
+            if (binaryString.substr(i * this.width + j, 1) == "1") {
+                this.grid[j][i] = true;
             }
             else {
-                grid[j][i] = false;
+                this.grid[j][i] = false;
             }
             
         }
     }
-    draw();
-
+    this.draw();
 }
 
-function run() {
-    steps++;
-    document.getElementById("steps").value = steps;
-    grid = next(grid);
-    draw();
-    encode();
+Grid.prototype.run = function(stepsTarget, encodeTarget) {
+    this.steps++;
+    //document.getElementById("steps").value = steps;
+    stepsTarget.value = this.steps;
+    this.next();
+    this.draw();
+    this.encode(encodeTarget);
 }
 
-function startStop() {
-	if (RUNNING > 0) {
-        clearInterval(RUNNING);
-        RUNNING = 0;
-        document.getElementById("run-btn").innerHTML = "Run";  
+Grid.prototype.startStop = function(stepsTarget, button, encodeTarget) {
+    if (this.running > 0) {
+        clearInterval(this.running);
+        this.running = 0;
+        //document.getElementById("run-btn").innerHTML = "Run";
+        button.innerHTML = "Run";
     }
     else {
-        RUNNING = setInterval(run, speed);
-        document.getElementById("run-btn").innerHTML = "Stop";
+        var that = this;
+        that.running = setInterval(function() {
+            that.run(stepsTarget, encodeTarget)
+        }, that.speed);
+        //document.getElementById("run-btn").innerHTML = "Stop";
+        button.innerHTML = "Stop";
     }
 }
 
-function clear() {
-	for (var i = 0; i < WIDTH; i ++) {
-        for (var j = 0; j < HEIGHT; j++) {
-            grid[i][j] = false;
+Grid.prototype.clear = function(stepsTarget, encodeTarget) {
+    for (var i = 0; i < this.width; i ++) {
+        for (var j = 0; j < this.height; j++) {
+            this.grid[i][j] = false;
         }
     }
-    steps = 0;
-    document.getElementById("steps").value = steps;
-    document.getElementById("importexport").value = "";
-    draw();
+    this.steps = 0;
+    stepsTarget.value = this.steps;
+    encodeTarget.value = "";
+    this.draw();
 }
 
-function setSpeed() {
-	speed = document.getElementById("speed").value;
-	clearInterval(RUNNING);
-	RUNNING = setInterval(run, speed);
-	document.getElementById("run-btn").innerHTML = "Stop";
+Grid.prototype.setSpeed = function(speed, button, stepsTarget, encodeTarget) {
+    this.speed = speed;
+    clearInterval(this.running);
+    var that = this;
+    that.running = setInterval(function() {
+        that.run(stepsTarget, encodeTarget)
+    }, that.speed);
+
+    //this.running = setInterval(this.run, this.speed);
+    button.innerHTML = "Stop";
 }
 
-function saveImage() {
-	window.open(canvas.toDataURL('image/png'));
-}
-
-function getRandomBoard() {
-	for (var i = 0; i < WIDTH; i ++) {
-        for (var j = 0; j < HEIGHT; j++) {
+Grid.prototype.getRandomBoard = function(stepsTarget, encodeTarget) {
+    for (var i = 0; i < this.width; i ++) {
+        for (var j = 0; j < this.height; j++) {
             var n = Math.floor((Math.random() * 10) + 1);
-            grid[i][j] = n > 5;
+            this.grid[i][j] = n > 5;
         }
     }
-    steps = 0;
-    document.getElementById("steps").value = steps;
-    draw();
-    encode();
+    this.steps = 0;
+    stepsTarget.value = this.steps;
+    this.draw();
+    this.encode(encodeTarget);
 }
+
+
 
 document.addEventListener("DOMContentLoaded", function() {
-  	document.getElementById("next-btn").addEventListener("click", run);
-    document.getElementById("run-btn").addEventListener("click", startStop);
-    document.getElementById("clear-btn").addEventListener("click", clear);
-    document.getElementById("speed-btn").addEventListener("click", setSpeed);
-    document.getElementById("img-save").addEventListener("click", saveImage);
-    document.getElementById("random-btn").addEventListener("click", getRandomBoard);
-    document.getElementById("import-btn").addEventListener("click", decode);
+    var canvas = document.getElementById('gol');
+    var stepsContainer = document.getElementById("steps");
+    var importExportContainer = document.getElementById("importexport");
+    var speedContainer = document.getElementById("speed");
+    var runButton = document.getElementById("run-btn");
+
+    var theGrid = new Grid(60, 60, canvas);
+    theGrid.setup();
+
+    canvas.addEventListener("click", function(event) {
+        var elemLeft = canvas.offsetLeft;
+        var elemTop = canvas.offsetTop;
+        var x = event.pageX - elemLeft;
+        var y = event.pageY - elemTop;
+        theGrid.clickGrid(x, y, importExportContainer);
+    });
+
+    document.getElementById("next-btn").addEventListener("click", function() {
+        theGrid.run(stepsContainer, importExportContainer);
+    });
+    document.getElementById("run-btn").addEventListener("click", function() {
+        theGrid.startStop(stepsContainer, runButton, importExportContainer);
+    });
+    document.getElementById("clear-btn").addEventListener("click", function() {
+        theGrid.clear(stepsContainer, importExportContainer);
+    });
+    document.getElementById("speed-btn").addEventListener("click", function() {
+        theGrid.setSpeed(speedContainer.value, runButton, stepsContainer, importExportContainer);
+    });
+    document.getElementById("img-save").addEventListener("click", function() {
+        window.open(canvas.toDataURL('image/png'));
+    });
+    document.getElementById("random-btn").addEventListener("click", function() {
+        theGrid.getRandomBoard(stepsContainer, importExportContainer);
+    });
+    document.getElementById("import-btn").addEventListener("click", function() {
+        theGrid.decode(importExportContainer);
+    });
 });
 </script>
 </body>

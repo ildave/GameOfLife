@@ -125,14 +125,11 @@ Grid.prototype.encode = function(target) {
         }
         encodedString += n;    
     }
-    
-    //document.getElementById("importexport").value = encodedString;
     target.value = encodedString;
 }
 
 Grid.prototype.decode = function(source) {
     //a.toString(2) -- need to pad
-    //var encodedString = document.getElementById("importexport").value;
     var encodedString = source.value;
     var binaryString = "";
     for (var i = 0; i < this.width * this.height / 8 * 3; i = i + 3) {
@@ -158,7 +155,6 @@ Grid.prototype.decode = function(source) {
 
 Grid.prototype.run = function(stepsTarget, encodeTarget) {
     this.steps++;
-    //document.getElementById("steps").value = steps;
     stepsTarget.value = this.steps;
     this.next();
     this.draw();
@@ -169,7 +165,6 @@ Grid.prototype.startStop = function(stepsTarget, button, encodeTarget) {
     if (this.running > 0) {
         clearInterval(this.running);
         this.running = 0;
-        //document.getElementById("run-btn").innerHTML = "Run";
         button.innerHTML = "Run";
     }
     else {
@@ -177,7 +172,6 @@ Grid.prototype.startStop = function(stepsTarget, button, encodeTarget) {
         that.running = setInterval(function() {
             that.run(stepsTarget, encodeTarget)
         }, that.speed);
-        //document.getElementById("run-btn").innerHTML = "Stop";
         button.innerHTML = "Stop";
     }
 }
@@ -202,7 +196,6 @@ Grid.prototype.setSpeed = function(speed, button, stepsTarget, encodeTarget) {
         that.run(stepsTarget, encodeTarget)
     }, that.speed);
 
-    //this.running = setInterval(this.run, this.speed);
     button.innerHTML = "Stop";
 }
 

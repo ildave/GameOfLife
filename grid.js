@@ -6,6 +6,8 @@ function Grid(width, height, canvas) {
     this.cellSize = 10;
     this.running = 0;
     this.steps = 0;
+    this.color = Color.random();
+    this.backGroundColor = Color.rgb(255, 255, 255);
 
     this.grid = new Array(this.width);
 }
@@ -21,12 +23,22 @@ Grid.prototype.setup = function() {
     }
 }
 
+Grid.prototype.getNextColor = function() {
+    var hsl = this.color.hslData();
+    var hue = hsl[0];
+    var sat = hsl[1];
+    var light = hsl[2];
+    hue = (hue + (Math.sin(this.steps) + 1) / 2) % 1.0;
+    var nextColor = Color.hsl(hue, sat, light);
+    this.color = nextColor;
+}
+
 Grid.prototype.fillGrid = function(x, y) {
     if (this.grid[x][y]) {
-        this.ctx.fillStyle = 'rgb(0, 0, 0)';
+        this.ctx.fillStyle = this.color.hexTriplet();
     }
     else {
-        this.ctx.fillStyle = 'rgb(255, 255, 255)';
+        this.ctx.fillStyle = this.backGroundColor.hexTriplet();
     }
     this.ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
 
@@ -49,6 +61,9 @@ Grid.prototype.clickGrid = function(x, y, target) {
 }
 
 Grid.prototype.next = function() {
+    if ((this.steps % 3) == 2) {
+        this.getNextColor();
+    }
     var next = new Array(this.width);
     for (var i = 0; i < this.width; i ++) {
         next[i] = new Array(this.height);
@@ -207,6 +222,7 @@ Grid.prototype.getRandomBoard = function(stepsTarget, encodeTarget) {
         }
     }
     this.steps = 0;
+    this.color = Color.random();
     stepsTarget.value = this.steps;
     this.draw();
     this.encode(encodeTarget);

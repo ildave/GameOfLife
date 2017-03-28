@@ -17,11 +17,12 @@
 Generations duration: <input type="text" id="speed" value="500" size="5" /> milliseconds <button id="speed-btn">Set</button><br />
 <input type="text" id="steps" value="0" size="5" /> steps<br />
 <button id="img-save">Save as image</button><br />
-<textarea id="importexport" cols="65" rows="10"></textarea> <button id="import-btn">Import</button>
+<textarea id="importexport" cols="65" rows="10"></textarea> <button id="import-btn">Import</button><br />
 
 <a href="https://github.com/ildave/GameOfLife"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
 
 <script src="grid.js"></script>
+<script src="color.js"></script>
 <script>
 
 function debug() {
@@ -29,6 +30,7 @@ function debug() {
     var values = args.join(", ");
     console.log(values);
 }
+
 
 document.addEventListener("DOMContentLoaded", function() {
     var canvas = document.getElementById('gol');

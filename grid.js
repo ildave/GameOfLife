@@ -212,15 +212,8 @@ Grid.prototype.clear = function(stepsTarget, encodeTarget) {
     this.draw();
 }
 
-Grid.prototype.setSpeed = function(speed, button, stepsTarget, encodeTarget) {
+Grid.prototype.setSpeed = function(speed) {
     this.speed = speed;
-    clearInterval(this.running);
-    var that = this;
-    that.running = setInterval(function() {
-        that.run(stepsTarget, encodeTarget)
-    }, that.speed);
-
-    button.innerHTML = "Stop";
 }
 
 Grid.prototype.getRandomBoard = function(stepsTarget, encodeTarget) {

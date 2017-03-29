@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
         theGrid.clear(stepsContainer, importExportContainer);
     });
     document.getElementById("speed-btn").addEventListener("click", function() {
-        theGrid.setSpeed(speedContainer.value, runButton, stepsContainer, importExportContainer);
+        theGrid.setSpeed(speedContainer.value);
     });
     document.getElementById("img-save").addEventListener("click", function() {
         window.open(canvas.toDataURL('image/png'));

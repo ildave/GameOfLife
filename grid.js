@@ -8,6 +8,7 @@ function Grid(width, height, canvas) {
     this.steps = 0;
     this.color = Color.random();
     this.backGroundColor = Color.rgb(255, 255, 255);
+    this.startTime = 0;
 
     this.grid = new Array(this.width);
 }
@@ -168,25 +169,33 @@ Grid.prototype.decode = function(source) {
     this.draw();
 }
 
-Grid.prototype.run = function(stepsTarget, encodeTarget) {
-    this.steps++;
-    stepsTarget.value = this.steps;
-    this.next();
-    this.draw();
-    this.encode(encodeTarget);
+Grid.prototype.run = function(stepsTarget, encodeTarget, timestamp) {
+    if (timestamp - this.startTime >= this.speed) {
+        this.startTime = timestamp;
+        this.steps++;
+        stepsTarget.value = this.steps;
+        this.next();
+        this.draw();
+        this.encode(encodeTarget);
+    }
+    var that = this;
+    this.running = requestAnimationFrame(function(t) {
+        that.run(stepsTarget, encodeTarget, t);
+    });
 }
 
 Grid.prototype.startStop = function(stepsTarget, button, encodeTarget) {
     if (this.running > 0) {
-        clearInterval(this.running);
+        cancelAnimationFrame(this.running);
         this.running = 0;
         button.innerHTML = "Run";
     }
     else {
         var that = this;
-        that.running = setInterval(function() {
-            that.run(stepsTarget, encodeTarget)
-        }, that.speed);
+        that.running = requestAnimationFrame(function(t) {
+            this.startTime = t;
+            that.run(stepsTarget, encodeTarget, t);
+        })
         button.innerHTML = "Stop";
     }
 }
